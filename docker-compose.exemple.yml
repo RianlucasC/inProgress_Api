@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  inprogress_api_prod:
+    build:
+      context: .
+      dockerfile: dockerfile.prod
+    ports:
+      - '3001:3001'
+    environment:
+      - PORT=3001
+      # Adicione outras variáveis de ambiente aqui, se necessário
+    volumes:
+      - ./src:/app/src
+
+  postgresql_db:
+    image: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: inprogress
+      POSTGRES_USER: exampleUser
+      POSTGRES_PASSWORD: examplePassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
