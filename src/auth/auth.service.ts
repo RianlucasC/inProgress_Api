@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
 import { SignUpDto } from './dto/signUp-auth.dto';
+import { AuthCredentials } from './auth.types';
 
 @Injectable()
 export class AuthService {
@@ -19,14 +20,27 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    return this.usersService.create({
+    this.usersService.create({
       username,
       email,
       password: hashedPassword,
     });
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async validateUser({ email, password }: AuthCredentials) {
+    const user = await this.usersService.findOneByEmail(email);
+
+    if (!user) {
+      return null;
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return null;
+    }
+
+    delete user.password;
+
+    return user;
   }
 }
