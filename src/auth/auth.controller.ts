@@ -4,7 +4,6 @@ import {
   Body,
   ValidationPipe,
   UseGuards,
-  Get,
   Req,
   Res,
 } from '@nestjs/common';
@@ -25,7 +24,6 @@ export class AuthController {
   @Post('signIn')
   @UseGuards(LocalGuard)
   async SignIn(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    console.log('teste');
     const user = req.user as {
       userId: string;
       username: string;
