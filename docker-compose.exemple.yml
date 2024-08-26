@@ -9,6 +9,10 @@ services:
       - '3001:3001'
     environment:
       - PORT=3001
+      - JWT_SECRET=secretExample
+      - GOOGLE_ID=idExample
+      - GOOGLE_SECRET=secretExample
+      - REDIRECT_URL=http://localhost:3000/auth/google/redirect
       # Adicione outras variáveis de ambiente aqui, se necessário
     volumes:
       - ./src:/app/src

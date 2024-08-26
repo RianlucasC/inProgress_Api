@@ -34,9 +34,11 @@ export class AuthService {
       return null;
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      return null;
+    if (user.auth_provider !== 'GOOGLE' && user.password === null) {
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
+        return null;
+      }
     }
 
     delete user.password;
