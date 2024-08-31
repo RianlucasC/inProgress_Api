@@ -7,6 +7,9 @@ import {
   Req,
   Res,
   Get,
+  HttpCode,
+  Put,
+  Query,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/signUp-auth.dto';
@@ -15,6 +18,8 @@ import { Response } from 'express';
 import { GoogleAuthGuard } from './guards/google.guard';
 import { IRequestWIthUserInfo } from './types/IResquestWIthUserInfo';
 import { timeConstants } from 'src/utils/timeConstants';
+import { RequestPasswordChangeDto } from './dto/requestPasswordChange.dto';
+import { ChangePasswordDto } from './dto/changePassword.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -52,6 +57,28 @@ export class AuthController {
     res.cookie('access_token', token, {
       httpOnly: true,
       maxAge: timeConstants.oneDayInMilliseconds,
+    });
+  }
+
+  @Post('requestPasswordChange')
+  @HttpCode(200)
+  requestPasswordChange(
+    @Body(new ValidationPipe())
+    requestPasswordChangeDto: RequestPasswordChangeDto,
+  ) {
+    return this.authService.processPasswordResetRequest(
+      requestPasswordChangeDto,
+    );
+  }
+
+  @Put('changePassword')
+  changePassoword(
+    @Body(new ValidationPipe()) changePasswordDto: ChangePasswordDto,
+    @Query('token') token,
+  ) {
+    return this.authService.changePassword({
+      token,
+      newPassword: changePasswordDto.newPassword,
     });
   }
 }

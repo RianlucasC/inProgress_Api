@@ -23,7 +23,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       );
     }
 
-    if (user.auth_provider === 'GOOGLE') {
+    if (user.auth_provider === 'GOOGLE' && !user.password) {
       throw new HttpException(
         'Este email está vinculado a uma conta Google. Faça login com o Google ou redefina sua senha.',
         HttpStatus.UNAUTHORIZED,
