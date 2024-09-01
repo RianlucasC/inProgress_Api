@@ -32,8 +32,18 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll(page = 1, limit = 10) {
+    const users = await this.userRepository.find({
+      select: {
+        id: true,
+        username: true,
+        avatar_url: true,
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return users;
   }
 
   findOne(id: number) {
