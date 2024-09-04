@@ -1,7 +1,9 @@
+import { Goal } from 'src/goals/entities/goal.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -31,9 +33,12 @@ export class User {
   @Column({ type: 'enum', enum: ['USER', 'ADMIN'], default: 'USER' })
   role: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
   @Column({ type: 'enum', enum: ['LOCAL', 'GOOGLE'], default: 'LOCAL' })
   auth_provider: string;
+
+  @OneToMany(() => Goal, (goal) => goal.user)
+  goals: Goal[];
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

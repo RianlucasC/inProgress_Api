@@ -31,7 +31,7 @@ export class UsersService {
 
     return this.userRepository.save(user);
   }
- 
+
   async findAll(page = 1, limit = 10) {
     const users = await this.userRepository.find({
       select: {
