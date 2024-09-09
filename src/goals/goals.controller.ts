@@ -1,42 +1,46 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
+  UseGuards,
+  Req,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { GoalsService } from './goals.service';
-import { CreateGoalDto } from './dto/create-goal.dto';
-import { UpdateGoalDto } from './dto/update-goal.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { IRequestWIthUserInfo } from 'src/auth/types/IResquestWIthUserInfo';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadService } from 'src/upload/upload.service';
 
 @Controller('goals')
 export class GoalsController {
-  constructor(private readonly goalsService: GoalsService) {}
+  constructor(
+    private readonly goalsService: GoalsService,
+    private uploadService: UploadService,
+  ) {}
 
   @Post()
-  create(@Body() createGoalDto: CreateGoalDto) {
-    return this.goalsService.create(createGoalDto);
-  }
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('banner'))
+  async create(
+    @Req() req: IRequestWIthUserInfo,
+    @Body('data') data: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const createGoalDto =
+      await this.goalsService.transformAndValidateGoalDto(data);
+    let bannerUrl: string = null;
 
-  @Get()
-  findAll() {
-    return this.goalsService.findAll();
-  }
+    if (file) {
+      bannerUrl = await this.uploadService.uploadAGoalBanner(file);
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.goalsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGoalDto: UpdateGoalDto) {
-    return this.goalsService.update(+id, updateGoalDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.goalsService.remove(+id);
+    const userId = req.user.userId;
+    return this.goalsService.create({
+      userId,
+      banner_url: bannerUrl,
+      ...createGoalDto,
+    });
   }
 }

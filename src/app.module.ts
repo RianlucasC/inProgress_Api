@@ -9,6 +9,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { GoalsModule } from './goals/goals.module';
+import { Goal } from './goals/entities/goal.entity';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -17,7 +19,7 @@ import { GoalsModule } from './goals/goals.module';
       host: 'postgresql_db',
       port: Number(process.env.DB_PORT),
       database: 'inprogress',
-      entities: [User],
+      entities: [User, Goal],
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       synchronize: true,
@@ -46,6 +48,7 @@ import { GoalsModule } from './goals/goals.module';
     AuthModule,
     UsersModule,
     GoalsModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
