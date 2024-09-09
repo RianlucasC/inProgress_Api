@@ -6,13 +6,13 @@ export class Goal {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @ManyToOne(() => User, (user) => user.goals)
+  @ManyToOne(() => User, (user) => user.goals, { onDelete: 'CASCADE' })
   user: User;
 
-  @Column({ type: 'string', nullable: false })
+  @Column({ nullable: false })
   title: string;
 
-  @Column({ type: 'string', nullable: false })
+  @Column({ nullable: false })
   description: string;
 
   @Column({

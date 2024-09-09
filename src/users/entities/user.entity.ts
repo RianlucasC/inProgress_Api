@@ -36,7 +36,7 @@ export class User {
   @Column({ type: 'enum', enum: ['LOCAL', 'GOOGLE'], default: 'LOCAL' })
   auth_provider: string;
 
-  @OneToMany(() => Goal, (goal) => goal.user)
+  @OneToMany(() => Goal, (goal) => goal.user, { cascade: ['remove'] })
   goals: Goal[];
 
   @CreateDateColumn()
