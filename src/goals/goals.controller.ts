@@ -6,6 +6,10 @@ import {
   Req,
   UploadedFile,
   UseInterceptors,
+  Get,
+  Query,
+  HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import { GoalsService } from './goals.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
@@ -42,5 +46,30 @@ export class GoalsController {
       banner_url: bannerUrl,
       ...createGoalDto,
     });
+  }
+
+  @Get()
+  async findAll(
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+  ) {
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+
+    if (isNaN(pageNumber) || pageNumber <= 0) {
+      throw new HttpException(
+        'O valor de página deve ser um número positivo.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (isNaN(limitNumber) || limitNumber <= 0 || limitNumber > 50) {
+      throw new HttpException(
+        'O valor de limite deve ser um número positivo e não deve exceder 50.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return this.goalsService.findAll(pageNumber, limitNumber);
   }
 }

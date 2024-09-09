@@ -1,5 +1,9 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UpdateGoalDto } from './dto/update-goal.dto';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { ICreateGoal } from './types/ICreateGoal';
 import { UsersService } from 'src/users/users.service';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -29,6 +33,18 @@ export class GoalsService {
     const savedGoal = await this.goalRepository.save(goal);
 
     return { id: savedGoal.id };
+  }
+
+  async findAll(page, limit) {
+    const goals = await this.goalRepository
+      .createQueryBuilder('goal')
+      .leftJoinAndSelect('goal.user', 'user')
+      .select(['goal', 'user.id', 'user.avatar_url', 'user.username'])
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getMany();
+
+    return goals;
   }
 
   async transformAndValidateGoalDto(data: string): Promise<CreateGoalDto> {
