@@ -47,7 +47,18 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    const user = await this.userRepository.findOneBy({ id });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: { goals: true },
+      select: {
+        id: true,
+        username: true,
+        avatar_url: true,
+        banner_url: true,
+        description: true,
+        goals: true,
+      },
+    });
     return user;
   }
 
