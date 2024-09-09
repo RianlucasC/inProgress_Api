@@ -10,6 +10,7 @@ import {
   Query,
   HttpStatus,
   HttpException,
+  Param,
 } from '@nestjs/common';
 import { GoalsService } from './goals.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
@@ -71,5 +72,16 @@ export class GoalsController {
     }
 
     return this.goalsService.findAll(pageNumber, limitNumber);
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    const IdNumber = Number(id);
+
+    if (isNaN(IdNumber)) {
+      throw new HttpException('Id inválido', HttpStatus.BAD_REQUEST);
+    }
+
+    return this.goalsService.findOne(IdNumber);
   }
 }

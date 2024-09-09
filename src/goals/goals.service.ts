@@ -47,6 +47,25 @@ export class GoalsService {
     return goals;
   }
 
+  async findOne(id: number) {
+    const goal = await this.goalRepository
+      .createQueryBuilder('goal')
+      .leftJoinAndSelect('goal.user', 'user')
+      .select([
+        'goal.id',
+        'goal.title',
+        'goal.description',
+        'goal.createdAt',
+        'user.id',
+        'user.avatar_url',
+        'user.username',
+      ])
+      .where('goal.id = :id', { id })
+      .getOne();
+
+    return goal;
+  }
+
   async transformAndValidateGoalDto(data: string): Promise<CreateGoalDto> {
     let createGoalDto: CreateGoalDto;
     try {
