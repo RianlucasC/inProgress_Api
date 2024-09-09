@@ -1,5 +1,11 @@
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Goal {
@@ -24,4 +30,7 @@ export class Goal {
 
   @Column({ nullable: true })
   banner_url: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }
