@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Delete,
   HttpException,
   HttpStatus,
   Injectable,
@@ -64,6 +65,30 @@ export class GoalsService {
       .getOne();
 
     return goal;
+  }
+
+  async remove(userId, goalId) {
+    const goal = await this.goalRepository.findOne({
+      where: { id: goalId },
+      relations: {
+        user: true,
+      },
+    });
+
+    if (!goal) {
+      throw new HttpException('Meta não encontrada.', HttpStatus.NOT_FOUND);
+    }
+
+    const goalBelongsToTheUser = goal.user.id === userId;
+
+    if (!goalBelongsToTheUser) {
+      throw new HttpException(
+        'Essa meta pertence a outro usuário.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    await this.goalRepository.remove(goal);
   }
 
   async transformAndValidateGoalDto(data: string): Promise<CreateGoalDto> {

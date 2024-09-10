@@ -11,6 +11,7 @@ import {
   HttpStatus,
   HttpException,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { GoalsService } from './goals.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
@@ -41,7 +42,7 @@ export class GoalsController {
       bannerUrl = await this.uploadService.uploadAGoalBanner(file);
     }
 
-    const userId = req.user.userId;
+    const userId = req.user.sub;
     return this.goalsService.create({
       userId,
       banner_url: bannerUrl,
@@ -83,5 +84,20 @@ export class GoalsController {
     }
 
     return this.goalsService.findOne(IdNumber);
+  }
+
+  @Delete(':goalId')
+  @UseGuards(JwtAuthGuard)
+  async remove(
+    @Param('goalId') goalId: string,
+    @Req() { user }: IRequestWIthUserInfo,
+  ) {
+    const numericGoalId = Number(goalId);
+
+    if (isNaN(numericGoalId)) {
+      throw new HttpException('Id inválido', HttpStatus.BAD_REQUEST);
+    }
+
+    return this.goalsService.remove(user.sub, numericGoalId);
   }
 }
