@@ -12,6 +12,8 @@ import {
   HttpException,
   Param,
   Delete,
+  Patch,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { GoalsService } from './goals.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
@@ -99,5 +101,20 @@ export class GoalsController {
     }
 
     return this.goalsService.remove(user.sub, numericGoalId);
+  }
+
+  @Patch(':goalId')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('banner'))
+  async updateGoal(
+    @Req() req: IRequestWIthUserInfo,
+    @Param('goalId', ParseIntPipe) goalId: number,
+    @Body('data') data: string,
+    @UploadedFile() newBanner: Express.Multer.File,
+  ) {
+    const userId = req.user.sub;
+    const updateGoalDto =
+      await this.goalsService.transformAndValidateUpdateGoalDto(data);
+    return this.goalsService.update(goalId, userId, updateGoalDto, newBanner);
   }
 }

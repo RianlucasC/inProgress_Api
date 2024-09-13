@@ -49,4 +49,14 @@ export class UploadService {
     const bannerUrl = `${process.env.SUPABASE_URL}//storage/v1/object/public/${data.fullPath}`;
     return bannerUrl;
   }
+
+  async updateBanner(oldBannerUrl: string, newBannerFile: Express.Multer.File) {
+    if (oldBannerUrl) {
+      const oldBannerPath = oldBannerUrl.split('/public/')[1];
+      await this.supabase.storage.from('banners').remove([oldBannerPath]);
+    }
+
+    const newBannerUrl = await this.uploadAGoalBanner(newBannerFile);
+    return newBannerUrl;
+  }
 }
